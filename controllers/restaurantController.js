@@ -1,42 +1,64 @@
 import { cloudinaryInstance } from "../config/cloudinary.js";
 import { Restaurant } from "../models/restaurantModel.js";
-import { User } from "../models/userModel.js";
+import bcrypt from "bcryptjs";
+import { generateToken } from "../utilities/token.js";
 
-export async function createRestaurant(req, res) {
+export const registerRestaurant = async (req, res) => {
   try {
-    const { name, email, phone, rating, menu } = req.body;
-    const restaurantExist = await Restaurant.findOne({ name: name });
-    if (restaurantExist) {
-      return res.status(400).json("Restaurant Already Exists");
+    const { name, email, phone, password, image } = req.body;
+    const existingRestaurant = await Restaurant.findOne({ email });
+    if (existingRestaurant) {
+      return res.status(400).json({ message: "Email already in use" });
     }
     if (!req.file) {
       return res.status(400).json({ message: "No image file uploaded" });
     }
     const imageUri = await cloudinaryInstance.uploader.upload(req.file.path);
-
+    const hashedPassword = await bcrypt.hash(password, 10);
     const newRestaurant = new Restaurant({
       name,
       email,
       phone,
-      image: imageUri.url,
-      rating,
-      menu,
-      sellerId: req.user.id,
+      password: hashedPassword,
+      image:imageUri.url,
     });
+
     await newRestaurant.save();
-    res
-      .status(201)
-      .json({ message: "Restaurant Added Successfully", newRestaurant });
+    const token = generateToken(newRestaurant);
+    res.cookie("token", token, { httpOnly: true });
+    res.status(201).json({ message: "Restaurant registered successfully",newRestaurant });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.log(error)
+    res.status(500).json({ message: "Server error", error });
   }
-}
+};
+
+export const loginRestaurant = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const restaurant = await Restaurant.findOne({ email });
+    if (!restaurant) {
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
+    if (!restaurant.isVerified) {
+      return res.status(403).json({ message: "Restaurant is not verified. Please wait for admin approval." });
+    }
+    const isMatch = await bcrypt.compare(password, restaurant.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+    const token = generateToken(restaurant);
+    res.cookie("token", token, { httpOnly: true });
+    res.status(200).json({ message: "Login successful", token });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
 
 export async function updateRestaurant(req, res) {
   try {
     const { restaurantId } = req.params;
-    const { name, email, phone } = req.body;
+    const { name, email, phone,rating } = req.body;
 
     const restaurant = await Restaurant.findById(restaurantId);
     if (name) restaurant.name = name;
@@ -60,7 +82,7 @@ export async function updateRestaurant(req, res) {
 export async function getRestaurantByName(req,res) {
   try {
     const {name} = req.params
-    const restaurant = await Restaurant.findOne({name:{$regex:name,$options:"i" }})
+    const restaurant = await Restaurant.findOne({name:{$regex:name,$options:"i" }}).select("-password")
     if(restaurant.length=== 0)  {
 return res.status(404).json({message:"Restaurant Not Found"})
     }
@@ -107,5 +129,15 @@ res.status(200).json({message:"Restaurat Have Been Deleted Successfully"})
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal Server Error" });  
+  }
+}
+
+export async function logout(req,res) {
+  try {
+    res.clearCookie("token")
+    res.status(200).json({message:"Logged Out Succesfully"})
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 }
