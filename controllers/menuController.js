@@ -145,7 +145,7 @@ export const deleteMenuItem = async (req, res) => {
       {
         $pull: { menu: { _id: menuItemId } }
       },
-      { new: true } // To return the updated document
+      { new: true }
     );
     await restaurant.save();
     res.status(200).json({ message: "Menu item deleted successfully" });
