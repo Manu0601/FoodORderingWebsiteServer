@@ -118,13 +118,13 @@ export const getMenuItemById = async (req, res) => {
     if (!restaurant) {
       return res.status(404).json({ message: "Restaurant not found" });
     }
-    const menuItem = restaurant.menu.id(menuItemId);
+    const menuItem = restaurant.menu.id(menuItemId).populated("Restaurant");
     if (!menuItem) {
       return res.status(404).json({ message: "Menu item not found" });
     }
     res.status(200).json({ menuItem });
   } catch (error) {
-    console.log(error);
+    console.log(error);                                                
     res.status(500).json({ message: "Server error", error });
   }
 };
@@ -154,4 +154,3 @@ export const deleteMenuItem = async (req, res) => {
     res.status(500).json({ message: "Server error", error });
   }
 };
-

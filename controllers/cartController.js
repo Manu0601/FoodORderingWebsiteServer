@@ -3,7 +3,7 @@ import { Cart } from "../models/cartModel.js";
 
 export async function addToCart(req, res) {
   try {
-    const { foodId, restaurantId } = req.body;
+    const { foodId} = req.body;
     const userId = req.user.id;
     const user = await User.findById(userId);
     if (!user) {
@@ -14,7 +14,6 @@ export async function addToCart(req, res) {
       cart = new Cart({
         userId,
         items: [{ foodId }],
-        restaurantId,
       });
     } else {
       const cartExistingItem = cart.items.find(
