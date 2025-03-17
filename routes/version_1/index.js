@@ -9,6 +9,7 @@ import { orderRouter } from './orderRouter.js'
 import { paymentRouter } from './paymentRouter.js'
 import { restaurantRouter } from './restaurantRouter.js'
 
+
 const router = express.Router()
 
 router.use("/user",authRouter)
@@ -20,5 +21,6 @@ router.use("/menu",menuItemsRouter)
 router.use("/order",orderRouter)
 router.use("/payment",paymentRouter)
 router.use("/restaurant",restaurantRouter)
+
 
 export const apiRouter = router
