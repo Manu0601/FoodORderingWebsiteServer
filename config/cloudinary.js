@@ -1,7 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import dotenv from "dotenv";
 
-dotenv.config(); // Load environment variables
+dotenv.config(); 
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -9,5 +9,5 @@ cloudinary.config({
   api_secret: process.env.CLOUD_API_SECRET,
 });
 const cloudinaryInstance = cloudinary
-export  { cloudinaryInstance }; // ✅ Export Cloudinary properly
+export  { cloudinaryInstance }; 
 

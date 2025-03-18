@@ -1,4 +1,4 @@
-import Cart from "../models/cartModel.js";
+import { Cart } from "../models/cartModel.js";
 import { Restaurant } from "../models/restaurantModel.js";
 
 export async function addToCart(req, res) {

@@ -7,7 +7,7 @@ const menuItemSchema = new Schema({
   price: { type: Number, required: true },
   description: { type: String },
   image: { type: String },
-  category: { type: String }, // Example: "Beverages", "Main Course", etc.
+  category: { type: String }, 
 });
 
 const restaurantSchema = new Schema({

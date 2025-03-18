@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-const { Schema } = mongoose;
 
+const { Schema } = mongoose;
 const cartSchema = new Schema(
   {
     userId: {
@@ -16,7 +16,7 @@ const cartSchema = new Schema(
       {
         foodId: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "MenuItem",
+          ref: "Restaurant.menu",
           required: true,
         },
         
@@ -57,4 +57,4 @@ cartSchema.method.calulateTotalPrice = function(){
   this.totalPrice = this.items.reduce((total,items)=> total + items.price,0);
 }
 
-export default mongoose.model("Cart", cartSchema);
+export const Cart = mongoose.model("Cart", cartSchema);
