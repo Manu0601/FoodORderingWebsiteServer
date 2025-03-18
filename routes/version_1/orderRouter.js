@@ -4,7 +4,7 @@ import { authMiddleware } from "../../middileware/authmiddileware.js";
 const router = express.Router();
 
 router.post("/update",authMiddleware,createOrder)
-router.get("/get/order",authMiddleware,getAllOrders)
+router.get("/get/all",authMiddleware,getAllOrders)
 router.get("/by/:orderId",authMiddleware,getOrderById)
 router.put("/update/:orderId",authMiddleware,updateOrderUser)
 router.put("/update/status/:orderId",authMiddleware,updateOrderStatus)

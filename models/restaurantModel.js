@@ -10,6 +10,8 @@ const menuItemSchema = new Schema({
   category: { type: String }, 
 });
 
+export const MenuItem = mongoose.model("MenuItem", menuItemSchema);
+
 const restaurantSchema = new Schema({
   name: { type: String, required: true, maxlength: 50 },
   email: { type: String, required: true, unique: true, trim: true },

@@ -46,7 +46,6 @@ const applyDiscount = async (totalAmount, couponId) => {
   if (!couponId) return totalAmount;
 
   const coupon = await Coupon.findById(couponId);
-console.log(coupon)
   if (!coupon) throw new Error("Coupon not found.");
   if (!coupon.isAvailable) throw new Error("Coupon is inactive.");
   if (coupon.expiryDate < new Date()) throw new Error("Coupon has expired.");

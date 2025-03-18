@@ -16,7 +16,7 @@ const cartSchema = new Schema(
       {
         foodId: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Restaurant.menu",
+          ref: "MenuItem",
           required: true,
         },
         
