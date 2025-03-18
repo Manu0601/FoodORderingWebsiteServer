@@ -10,7 +10,7 @@ import {
   updateRestaurant,
 } from "../../controllers/restaurantController.js";
 import { upload } from "../../middileware/multermiddileware.js";
-import { authMiddleware, restaurantMiddleware } from "../../middileware/authmiddileware.js";
+import { restaurantMiddleware } from "../../middileware/authmiddileware.js";
 const router = express.Router();
 
 router.post("/register", upload.single("image"), registerRestaurant);
@@ -24,7 +24,7 @@ router.put(
 router.get("/by/:name", getRestaurantByName);
 router.get("/all", getAllRestaurant);
 router.get("/id/:restaurantId", getRestaurantById);
-router.delete("/delete/:restaurantId", deleteRestaurant);
-router.post("/logout",logout)
+router.delete("/delete/:restaurantId",restaurantMiddleware, deleteRestaurant);
+router.post("/logout",restaurantMiddleware,logout)
 
 export const restaurantRouter = router;
