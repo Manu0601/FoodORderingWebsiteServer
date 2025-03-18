@@ -128,7 +128,6 @@ export async function deleteCartItem(req, res) {
   try {
     const userId = req.user.id;
     const { foodId } = req.params;
-    console.log(foodId)
     const cart = await Cart.findOne({ userId, cartStatus: { $ne: "ordered" } });
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
