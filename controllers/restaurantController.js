@@ -1,7 +1,7 @@
 import { cloudinaryInstance } from "../config/cloudinary.js";
 import { Restaurant } from "../models/restaurantModel.js";
 import bcrypt from "bcryptjs";
-import { generateToken } from "../utilities/token.js";
+import { generateToken, restaurantToken } from "../utilities/token.js";
 
 export const registerRestaurant = async (req, res) => {
   try {
@@ -24,7 +24,7 @@ export const registerRestaurant = async (req, res) => {
     });
 
     await newRestaurant.save();
-    const token = generateToken(newRestaurant);
+    const token = restaurantToken(newRestaurant);
     res.cookie("token", token, { httpOnly: true });
     res.status(201).json({ message: "Restaurant registered successfully",newRestaurant });
   } catch (error) {
@@ -47,7 +47,7 @@ export const loginRestaurant = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
-    const token = generateToken(restaurant);
+    const token = restaurantToken(restaurant);
     res.cookie("token", token, { httpOnly: true });
     res.status(200).json({ message: "Login successful" });
   } catch (error) {
@@ -57,7 +57,8 @@ export const loginRestaurant = async (req, res) => {
 
 export async function updateRestaurant(req, res) {
   try {
-    const { restaurantId } = req.params;
+    const restaurantId  = req.restaurant.id
+    console.log(restaurantId)
     const { name, email, phone,rating } = req.body;
 
     const restaurant = await Restaurant.findById(restaurantId);

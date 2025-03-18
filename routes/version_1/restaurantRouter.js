@@ -10,12 +10,13 @@ import {
   updateRestaurant,
 } from "../../controllers/restaurantController.js";
 import { upload } from "../../middileware/multermiddileware.js";
+import { authMiddleware, restaurantMiddleware } from "../../middileware/authmiddileware.js";
 const router = express.Router();
 
 router.post("/register", upload.single("image"), registerRestaurant);
 router.post("/login", loginRestaurant);
 router.put(
-  "/update/:restaurantId",
+  "/update",restaurantMiddleware,
   upload.single("image"),
   updateRestaurant
 );
