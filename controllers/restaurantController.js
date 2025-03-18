@@ -49,7 +49,7 @@ export const loginRestaurant = async (req, res) => {
     }
     const token = generateToken(restaurant);
     res.cookie("token", token, { httpOnly: true });
-    res.status(200).json({ message: "Login successful", token });
+    res.status(200).json({ message: "Login successful" });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
