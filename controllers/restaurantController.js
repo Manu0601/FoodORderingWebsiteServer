@@ -1,30 +1,27 @@
 import { cloudinaryInstance } from "../config/cloudinary.js";
 import { Restaurant } from "../models/restaurantModel.js";
 import bcrypt from "bcryptjs";
-import { generateToken, restaurantToken } from "../utilities/token.js";
+import { restaurantToken } from "../utilities/token.js";
 
 export const registerRestaurant = async (req, res) => {
   try {
-
-    const { name, email, phone, password } = req.body;
-
-    if (!email) {
-      return res.status(400).json({ message: "Email is required" });
-    }
-
-    const existingRestaurant = await Restaurant.findOne({ email });
-    if (existingRestaurant) {
+    const { name, email, phone, password, image, contactEmail } = req.body;
+    const existingRestaurantEmail = await Restaurant.findOne({ email });
+    if (existingRestaurantEmail) {
       return res.status(400).json({ message: "Email already in use" });
+    }
+    const existingRestaurantPhone = await Restaurant.findOne({ phone });
+    if (existingRestaurantPhone) {
+      return res.status(400).json({ message: "Phone number already in use" });
     }
     if (!req.file) {
       return res.status(400).json({ message: "No image file uploaded" });
     }
-    const imageUri = await cloudinaryInstance.uploader.upload(req.file.path);
-
-    if (password.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    const allowedImageTypes = ['image/jpeg', 'image/png'];
+    if (!allowedImageTypes.includes(req.file.mimetype)) {
+      return res.status(400).json({ message: "Invalid image type. Only JPG and PNG are allowed." });
     }
-
+    const imageUri = await cloudinaryInstance.uploader.upload(req.file.path);
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newRestaurant = new Restaurant({
@@ -32,17 +29,25 @@ export const registerRestaurant = async (req, res) => {
       email,
       phone,
       password: hashedPassword,
-      image: imageUri.url, 
+      image: imageUri.url,
+      contactEmail
     });
 
-
+    // Save the new restaurant to the database
     await newRestaurant.save();
+
+    // Create token
     const token = restaurantToken(newRestaurant);
+
+    // Set the token in a cookie
     res.cookie("token", token, { httpOnly: true });
+
+    // Respond with success
     res.status(201).json({ message: "Restaurant registered successfully", newRestaurant });
+
   } catch (error) {
-    console.log("Error registering restaurant: ", error); 
-    res.status(500).json({ message: "Server error", error });
+    console.log(error); // Log the error for debugging purposes
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 

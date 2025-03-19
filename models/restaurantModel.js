@@ -27,6 +27,13 @@ const restaurantSchema = new Schema({
     unique: true, 
     match: /^[0-9]{10}$/ 
   },
+  contactEmail: {
+    type: String,
+    unique: true,
+    match: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+    required: false, 
+    default: null, 
+  },
   password: { type: String, required: true },
   image: { type: String },
   isVerified: { type: Boolean, default: false },
