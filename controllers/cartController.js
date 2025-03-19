@@ -38,6 +38,7 @@ export async function addToCart(req, res) {
     } else {
       cart.items.push({
         foodId,
+        foodName:menuItem.name,
         quantity,
         totalItemPrice: itemPrice,
       });
