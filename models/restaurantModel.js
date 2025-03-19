@@ -14,7 +14,13 @@ export const MenuItem = mongoose.model("MenuItem", menuItemSchema);
 
 const restaurantSchema = new Schema({
   name: { type: String, required: true, maxlength: 50 },
-  email: { type: String, required: true, unique: true, trim: true },
+  email: { 
+    type: String, 
+    required: true, 
+    unique: true, 
+    trim: true,
+    match: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+  },
   phone: { 
     type: String, 
     required: true, 

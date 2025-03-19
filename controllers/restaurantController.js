@@ -5,7 +5,13 @@ import { generateToken, restaurantToken } from "../utilities/token.js";
 
 export const registerRestaurant = async (req, res) => {
   try {
-    const { name, email, phone, password, image } = req.body;
+
+    const { name, email, phone, password } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
     const existingRestaurant = await Restaurant.findOne({ email });
     if (existingRestaurant) {
       return res.status(400).json({ message: "Email already in use" });
@@ -14,21 +20,28 @@ export const registerRestaurant = async (req, res) => {
       return res.status(400).json({ message: "No image file uploaded" });
     }
     const imageUri = await cloudinaryInstance.uploader.upload(req.file.path);
+
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const newRestaurant = new Restaurant({
       name,
       email,
       phone,
       password: hashedPassword,
-      image:imageUri.url,
+      image: imageUri.url, 
     });
+
 
     await newRestaurant.save();
     const token = restaurantToken(newRestaurant);
     res.cookie("token", token, { httpOnly: true });
-    res.status(201).json({ message: "Restaurant registered successfully",newRestaurant });
+    res.status(201).json({ message: "Restaurant registered successfully", newRestaurant });
   } catch (error) {
-    console.log(error)
+    console.log("Error registering restaurant: ", error); 
     res.status(500).json({ message: "Server error", error });
   }
 };
