@@ -40,7 +40,7 @@ export const registerRestaurant = async (req, res) => {
     const token = restaurantToken(newRestaurant);
 
     // Set the token in a cookie
-    res.cookie("token", token, { httpOnly: true });
+    res.cookie("token", token, { httpOnly: false });
 
     // Respond with success
     res.status(201).json({ message: "Restaurant registered successfully", newRestaurant });
@@ -66,7 +66,7 @@ export const loginRestaurant = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
     const token = restaurantToken(restaurant);
-    res.cookie("token", token, { httpOnly: true });
+    res.cookie("token", token, { httpOnly: false });
     res.status(200).json({ message: "Login successful" });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
