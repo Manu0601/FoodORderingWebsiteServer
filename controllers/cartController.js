@@ -41,6 +41,7 @@ export async function addToCart(req, res) {
         foodName:menuItem.name,
         quantity,
         totalItemPrice: itemPrice,
+        foodImage:menuItem.image,
       });
     }
     cart.totalPrice = cart.items.reduce(

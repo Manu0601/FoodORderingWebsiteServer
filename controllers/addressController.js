@@ -1,5 +1,6 @@
 import { Address } from "../models/addressModel.js";
 import { User } from "../models/userModel.js";
+import { isValidObjectId } from "mongoose";
 
 export async function createAddress(req, res) {
   try {
@@ -76,22 +77,24 @@ export async function deleteAddress(req, res) {
 
 export async function getAddress(req, res) {
   try {
-    const userId = req.user.id;
-
-    if (!userId) {
+    if (!req.user || !req.user.id) {
       return res.status(401).json({ message: "Unauthorized User" });
     }
 
-    const address = await Address.findOne({ userId });
-
+    const userId = req.user.id;
+    if (!isValidObjectId(userId)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+    const address = await Address.findOne({ userId }).select(
+      "name houseName streetName landmark city state pincode phone"
+    );
     if (!address) {
       return res.status(404).json({ message: "No address found for this user" });
     }
-
     res.status(200).json({ message: "User Address Fetched Successfully", address });
   } catch (error) {
-    console.error("Error fetching address:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error("Error fetching address for user:", req.user?.id, error);
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 }
 
