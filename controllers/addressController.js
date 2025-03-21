@@ -67,3 +67,22 @@ export async function deleteAddress(req, res) {
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
+
+export async function getaddress(req, res) {
+  try {
+    const userId = req.user.id;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized User" });
+    }
+    const address = await Address.findOne({ userId });
+
+    if (!address) {
+      return res.status(404).json({ message: "Unable To Find Address" });
+    }
+
+    res.status(200).json({ message: "User Address Fetched Successfully", address });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
